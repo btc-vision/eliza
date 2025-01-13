@@ -160,6 +160,9 @@ export const deployContractAction: Action = {
                     elizaLogger.error("Invalid P2TR address");
                     throw new Error("Invalid P2TR address");
                 }
+            } else {
+                elizaLogger.error("Invalid public key");
+                throw new Error("Invalid public key");
             }
         }
 
