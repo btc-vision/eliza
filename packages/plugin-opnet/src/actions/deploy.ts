@@ -21,11 +21,9 @@ import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import { initWalletProvider } from "../providers/wallet.ts";
 
+const network = networks.regtest;
 const transactionFactory = new TransactionFactory();
-const provider = new JSONRpcProvider(
-    "https://regtest.opnet.org",
-    networks.regtest
-);
+const provider = new JSONRpcProvider("https://regtest.opnet.org", network);
 
 const deployContractTemplate = `
 # Task: Determine the contract code file path and constructor arguments for deploying a contract.
@@ -152,11 +150,17 @@ export const deployContractAction: Action = {
         const options = aOptions.args;
         console.log("Deploying contract...", options);
 
-        if (
-            !AddressVerificator.isValidPublicKey(options[4], networks.regtest)
-        ) {
-            elizaLogger.error("Invalid mint address");
-            throw new Error("Invalid mint address");
+        if (!AddressVerificator.isValidPublicKey(options[4], network)) {
+            if (AddressVerificator.isValidP2TRAddress(options[4], network)) {
+                const original = await provider.getPublicKeyInfo(options[4]);
+
+                if (original) {
+                    options[4] = original.toHex();
+                } else {
+                    elizaLogger.error("Invalid P2TR address");
+                    throw new Error("Invalid P2TR address");
+                }
+            }
         }
 
         let result: string = "";
@@ -218,7 +222,7 @@ export const deployContractAction: Action = {
                 signer: signer,
                 priorityFee: 0n,
                 utxos: utxos,
-                network: networks.regtest,
+                network: network,
             };
 
             // Step 4: Deploy the contract
