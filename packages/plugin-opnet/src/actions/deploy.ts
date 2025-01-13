@@ -26,7 +26,8 @@ const transactionFactory = new TransactionFactory();
 const provider = new JSONRpcProvider("https://regtest.opnet.org", network);
 
 const deployContractTemplate = `
-# Task: Determine the contract code file path and constructor arguments for deploying a contract.
+# Task: Determine token contract deployment parameters. It includes the following fields in order: token name, token symbol, max supply, decimals, and mint the supply to address.
+# If the user ask you to generate a random token, you can create a surprise token for them DeFi and AI related.
 
 # Instructions: The user is requesting to deploy a contract to the GenLayer protocol.
 
@@ -38,12 +39,11 @@ const deployContractTemplate = `
 {{recentMessagesData}}
 </data from recent messages>
 
+# Do not add any comments or extra text in the response. It must strictly be a valid JSON block.
 # Your response must be formatted as a JSON block with this structure:
 \`\`\`json
 {
-  "code_file": "<Contract Code File Path>",
-  "args": [<Constructor Args>],
-  "leaderOnly": <true/false>
+  "args": [<Constructor Args>]
 }
 \`\`\`
 `;
