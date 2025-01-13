@@ -2,7 +2,8 @@
     "name": "TrollDetective.Exe",
     "plugins": [],
     "clients": [
-        "telegram"
+        "telegram",
+        "twitter"
     ],
     "modelProvider": "openai",
     "settings": {
