@@ -136,6 +136,7 @@ export class TelegramClient {
 
                 await this.messageManager.handleMessage(ctx);
             } catch (error) {
+                console.log(error)
                 elizaLogger.error("❌ Error handling message:", error);
                 // Don't try to reply if we've left the group or been kicked
                 if (error?.response?.error_code !== 403) {
@@ -197,7 +198,7 @@ export class TelegramClient {
 
     public async stop(): Promise<void> {
         elizaLogger.log("Stopping Telegram bot...");
-        //await 
+        //await
             this.bot.stop();
         elizaLogger.log("Telegram bot stopped");
     }

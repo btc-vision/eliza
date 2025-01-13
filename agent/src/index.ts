@@ -103,6 +103,7 @@ import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { verifiableLogPlugin } from "@elizaos/plugin-tee-verifiable-log";
 import createNFTCollectionsPlugin from "@elizaos/plugin-nft-collections";
+import { opnetPlugin } from "@elizaos/plugin-opnet";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -149,6 +150,7 @@ function tryLoadFile(filePath: string): string | null {
         return null;
     }
 }
+
 function mergeCharacters(base: Character, child: Character): Character {
     const mergeObjects = (baseObj: any, childObj: any) => {
         const result: any = {};
@@ -181,6 +183,7 @@ function mergeCharacters(base: Character, child: Character): Character {
     };
     return mergeObjects(base, child);
 }
+
 async function loadCharacter(filePath: string): Promise<Character> {
     const content = tryLoadFile(filePath);
     if (!content) {
@@ -760,6 +763,7 @@ export async function createAgent(
                 getSecret(character, "WALLET_PUBLIC_KEY")?.startsWith("0x"))
                 ? evmPlugin
                 : null,
+            getSecret(character, "OPNET_PRIVATE_KEY") ? opnetPlugin : null,
             getSecret(character, "COSMOS_RECOVERY_PHRASE") &&
                 getSecret(character, "COSMOS_AVAILABLE_CHAINS") &&
                 createCosmosPlugin(),
@@ -799,9 +803,11 @@ export async function createAgent(
                   ]
                 : []),
             ...(teeMode !== TEEMode.OFF && walletSecretSalt ? [teePlugin] : []),
-            (teeMode !== TEEMode.OFF && walletSecretSalt &&getSecret(character,"VLOG")
+            teeMode !== TEEMode.OFF &&
+            walletSecretSalt &&
+            getSecret(character, "VLOG")
                 ? verifiableLogPlugin
-                : null),
+                : null,
             getSecret(character, "SGX") ? sgxPlugin : null,
             getSecret(character, "ENABLE_TEE_LOG") &&
             ((teeMode !== TEEMode.OFF && walletSecretSalt) ||
